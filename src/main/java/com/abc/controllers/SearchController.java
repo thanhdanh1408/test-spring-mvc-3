@@ -1,11 +1,12 @@
 package com.abc.controllers;
 
-import com.abc.dao.UserDAO;
 import com.abc.entities.User;
+import com.abc.services.UserService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.ui.Model;
-import org.springframework.web.bind.annotation.*;
+import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import java.util.List;
 
@@ -13,13 +14,20 @@ import java.util.List;
 public class SearchController {
 
     @Autowired
-    private UserDAO userDAO;
+    private UserService userService;
 
     @GetMapping("/search")
     public String searchUser(@RequestParam("query") String query, Model model) {
-        List<User> results = userDAO.searchUsersByUsername(query);
-        model.addAttribute("results", results);
-        model.addAttribute("keyword", query);
-        return "searchResult"; // Tên file JSP: searchResult.jsp
+        try {
+            List<User> results = userService.searchUsersByUsername(query);
+            model.addAttribute("results", results);
+            model.addAttribute("keyword", query);
+            if (results == null || results.isEmpty()) {
+                model.addAttribute("notFound", true);
+            }
+        } catch (Exception e) {
+            model.addAttribute("error", "Không thể tìm kiếm người dùng");
+        }
+        return "searchResult";
     }
 }

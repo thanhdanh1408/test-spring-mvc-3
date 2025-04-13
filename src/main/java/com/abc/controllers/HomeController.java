@@ -16,34 +16,37 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class HomeController {
-	
+
     private PostService postService;
     private FollowService followService;
-    
+
     @Autowired
-	public HomeController(PostService postService, FollowService followService) {
-		this.postService = postService;
-		this.followService = followService;
-	}
-	@RequestMapping(value = "/")
+    public HomeController(PostService postService, FollowService followService) {
+        this.postService = postService;
+        this.followService = followService;
+    }
+
+    @RequestMapping(value = "/")
     public String homeController(Model model, HttpSession httpSession) {
-		User user = (User) httpSession.getAttribute("user");
-		if(user == null) {
-			return "redirect:/login";
-		}
+        User user = (User) httpSession.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
 
-		
-		
-        List<User> suggestFollow = followService.getSuggestFollow(user.getId());
-        List<User> usersf = followService.getUserFollower(user.getId());
-        List<User> userfed = followService.getUserFollowed(user.getId());
-        List<Post> posts = postService.getAllPost(user.getId());
+        try {
+            List<User> suggestFollow = followService.getSuggestFollow(user.getId());
+            List<User> usersf = followService.getUserFollower(user.getId());
+            List<User> userfed = followService.getUserFollowed(user.getId());
+            List<Post> posts = postService.getAllPost(user.getId());
 
-        model.addAttribute("suggestfollow", suggestFollow);
-        model.addAttribute("usersf",usersf);
-        model.addAttribute("userfed",userfed);
-        model.addAttribute("posts", posts);
-        
+            model.addAttribute("suggestfollow", suggestFollow);
+            model.addAttribute("usersf", usersf);
+            model.addAttribute("userfed", userfed);
+            model.addAttribute("posts", posts);
+        } catch (Exception e) {
+            model.addAttribute("error", "Không thể tải dữ liệu trang chủ");
+        }
+
         return "home";
     }
 }

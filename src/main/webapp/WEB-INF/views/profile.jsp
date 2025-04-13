@@ -62,7 +62,7 @@
                         <div class="d-flex align-items-center">
                             <img src="${pageContext.request.contextPath}/resources/images/avt.jpg" alt="Avatar" class="rounded-circle me-2" width="30">
                             <b><%= user.getUsername() %></b>
-                            <span class="text-muted ms-3"><%= post.getCreateAt() %></span>
+                            <span class="text-muted ms-3"><%= post.getCreatedAt() %></span>
                         </div>
                         <div class="dropdown">
                             <button class="btn btn-light btn-sm" type="button" data-bs-toggle="dropdown" aria-expanded="false">⋮</button>

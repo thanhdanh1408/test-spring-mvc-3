@@ -96,7 +96,7 @@ if (user == null)
 							<img
 								src="${pageContext.request.contextPath}/resources/images/avt.jpg"
 								alt="Avatar" class="rounded-circle me-2" width="30"> <b><%=post.getUserId()%></b>
-							<span class="text-muted ms-3"><%=post.getCreateAt()%></span>
+							<span class="text-muted ms-3"><%=post.getCreatedAt()%></span>
 						</div>
 						<div class="dropdown">
 							<button class="btn btn-light btn-sm" type="button"

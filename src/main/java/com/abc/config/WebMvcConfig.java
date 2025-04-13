@@ -13,17 +13,17 @@ import org.springframework.web.servlet.view.InternalResourceViewResolver;
 @EnableWebMvc
 @ComponentScan(basePackages = "com.abc.controllers")
 public class WebMvcConfig implements WebMvcConfigurer {
-	
-	@Bean
-	public ViewResolver viewResolver() {
-		InternalResourceViewResolver resolver = new InternalResourceViewResolver();
-		resolver.setPrefix("/WEB-INF/views/");
-		resolver.setSuffix(".jsp");
-		return resolver;
-	}
-	@Override
-	public void addResourceHandlers(ResourceHandlerRegistry registry) {
-		registry.addResourceHandler("/resources/**").addResourceLocations("/resource/");
-	}
-		
+
+    @Bean
+    public ViewResolver viewResolver() {
+        InternalResourceViewResolver resolver = new InternalResourceViewResolver();
+        resolver.setPrefix("/WEB-INF/views/");
+        resolver.setSuffix(".jsp");
+        return resolver;
+    }
+
+    @Override
+    public void addResourceHandlers(ResourceHandlerRegistry registry) {
+        registry.addResourceHandler("/resources/**").addResourceLocations("/resources/");
+    }
 }

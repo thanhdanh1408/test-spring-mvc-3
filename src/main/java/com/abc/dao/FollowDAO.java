@@ -1,116 +1,76 @@
 package com.abc.dao;
 
-import java.sql.Connection;
-import java.sql.PreparedStatement;
-import java.sql.ResultSet;
-import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
-
+import com.abc.entities.Follow;
+import com.abc.entities.User;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.query.Query;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
-import com.abc.config.DatabaseConfig;
-import com.abc.entities.User;
+import java.time.LocalDateTime;
+import java.util.List;
 
 @Repository
 public class FollowDAO {
 
+    @Autowired
+    private SessionFactory sessionFactory;
 
     public List<User> getFollowerUser(int id) {
-        List<User> userFollower = new ArrayList<>();
-        String sql = "SELECT * FROM users "
-                   + "JOIN follows ON users.id = follows.following_user_id "
-                   + "WHERE follows.followed_user_id = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                userFollower.add(new User(
-                    rs.getInt("id"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getString("created_at")
-                ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try (Session session = sessionFactory.openSession()) {
+            String hql = "SELECT u FROM User u " +
+                        "JOIN Follow f ON u.id = f.followingUserId " +
+                        "WHERE f.followedUserId = :id";
+            Query<User> query = session.createQuery(hql, User.class);
+            query.setParameter("id", id);
+            return query.list();
         }
-        return userFollower;
     }
-
 
     public List<User> getFollowedUsers(int id) {
-        List<User> userFollowed = new ArrayList<>();
-        String sql = "SELECT * FROM users "
-                   + "JOIN follows ON users.id = follows.followed_user_id "
-                   + "WHERE follows.following_user_id = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, id);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                userFollowed.add(new User(
-                    rs.getInt("id"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getString("created_at")
-                ));
-            }
-        } catch (SQLException e) {
-            e.printStackTrace();
+        try (Session session = sessionFactory.openSession()) {
+            String hql = "SELECT u FROM User u " +
+                        "JOIN Follow f ON u.id = f.followedUserId " +
+                        "WHERE f.followingUserId = :id";
+            Query<User> query = session.createQuery(hql, User.class);
+            query.setParameter("id", id);
+            return query.list();
         }
-        return userFollowed;
     }
-
 
     public void followUser(int followingUserId, int followedUserId) {
-        String sql = "INSERT INTO follows (following_user_id, followed_user_id, created_at) VALUES (?, ?, NOW())";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, followingUserId);
-            stmt.setInt(2, followedUserId);
-            stmt.executeUpdate();
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            Follow follow = new Follow(followingUserId, followedUserId, LocalDateTime.now());
+            session.save(follow);
+            session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
-
 
     public void unfollowUser(int followingUserId, int followedUserId) {
-        String sql = "DELETE FROM follows WHERE following_user_id = ? AND followed_user_id = ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, followingUserId);
-            stmt.setInt(2, followedUserId);
-            stmt.executeUpdate();
+        try (Session session = sessionFactory.openSession()) {
+            session.beginTransaction();
+            Query query = session.createQuery("DELETE FROM Follow WHERE followingUserId = :followingUserId AND followedUserId = :followedUserId");
+            query.setParameter("followingUserId", followingUserId);
+            query.setParameter("followedUserId", followedUserId);
+            query.executeUpdate();
+            session.getTransaction().commit();
         } catch (Exception e) {
             e.printStackTrace();
         }
     }
 
-
     public List<User> getSuggestedFollows(int userId) {
-        List<User> users = new ArrayList<>();
-        String sql = "SELECT u.* FROM users u "
-                   + "LEFT JOIN follows f ON u.id = f.followed_user_id AND f.following_user_id = ? "
-                   + "WHERE f.followed_user_id IS NULL AND u.id <> ?";
-        try (Connection conn = DatabaseConfig.getConnection();
-             PreparedStatement stmt = conn.prepareStatement(sql)) {
-            stmt.setInt(1, userId);
-            stmt.setInt(2, userId);
-            ResultSet rs = stmt.executeQuery();
-            while (rs.next()) {
-                users.add(new User(
-                    rs.getInt("id"),
-                    rs.getString("username"),
-                    rs.getString("password"),
-                    rs.getString("created_at")
-                ));
-            }
-        } catch (Exception e) {
-            e.printStackTrace();
+        try (Session session = sessionFactory.openSession()) {
+            String hql = "SELECT u FROM User u " +
+                        "LEFT JOIN Follow f ON u.id = f.followedUserId AND f.followingUserId = :userId " +
+                        "WHERE f.followedUserId IS NULL AND u.id <> :userId";
+            Query<User> query = session.createQuery(hql, User.class);
+            query.setParameter("userId", userId);
+            return query.list();
         }
-        return users;
     }
 }

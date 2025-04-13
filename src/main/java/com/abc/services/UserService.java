@@ -7,6 +7,6 @@ import com.abc.entities.User;
 public interface UserService {
     User getUserByUserName(String userName);
     boolean registerUser(User user);
-    List<User> searchUsersByFollowStats(int minFollowing, int minFollower);
-
+    List<User> findUsersByFollowCriteria(int minFollowing, int minFollower);
+    List<User> searchUsersByUsername(String keyword);
 }

@@ -14,29 +14,37 @@ import jakarta.servlet.http.HttpSession;
 
 @Controller
 public class PostController {
-	
-	private PostService postService;
-	
-	@Autowired
-	public PostController(PostService postService) {
-		this.postService = postService;
-	}
-	@PostMapping("/post")
-	public String createPost(@RequestParam("title") String title, @RequestParam("body") String body,HttpSession session, Model model) {
-		User user = (User) session.getAttribute("user");
-		Post post = new Post(title,body,user.getId(),"public");
-		
-		
-		if(title.isEmpty() || body.isEmpty()) {
-			model.addAttribute("error","không được để rỗng title và body");
-			return "redirect:/";
-		}
-		if(postService.createdPost(post)) {
-			return "redirect:/";
-		}
-		
-		model.addAttribute("error","Đăng bài viết thất bại");
-		
-		return "redirect:/";
-	}
+
+    private PostService postService;
+
+    @Autowired
+    public PostController(PostService postService) {
+        this.postService = postService;
+    }
+
+    @PostMapping("/post")
+    public String createPost(@RequestParam("title") String title, @RequestParam("body") String body, HttpSession session, Model model) {
+        User user = (User) session.getAttribute("user");
+        if (user == null) {
+            return "redirect:/login";
+        }
+
+        try {
+            Post post = new Post(title, body, user.getId(), "public");
+            if (title.trim().isEmpty() || body.trim().isEmpty()) {
+                model.addAttribute("error", "Không được để trống tiêu đề hoặc nội dung");
+                return "redirect:/";
+            }
+
+            if (postService.createdPost(post)) {
+                return "redirect:/";
+            } else {
+                model.addAttribute("error", "Đăng bài viết thất bại");
+                return "redirect:/";
+            }
+        } catch (IllegalArgumentException e) {
+            model.addAttribute("error", e.getMessage());
+            return "redirect:/";
+        }
+    }
 }
