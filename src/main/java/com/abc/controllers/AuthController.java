@@ -74,6 +74,7 @@ public class AuthController {
             @RequestParam("placeId") Long placeId,
             @RequestParam("avatarFile") MultipartFile avatarFile,
             Model model) {
+        System.out.println("Received registration request: username=" + username + ", email=" + email);
         try {
             // Kiểm tra email hợp lệ
             if (!userService.isEmailValid(email)) {
@@ -98,6 +99,7 @@ public class AuthController {
 
             // Xử lý upload avatar
             if (!avatarFile.isEmpty()) {
+                System.out.println("Uploading avatar: " + avatarFile.getOriginalFilename());
                 validateAvatar(avatarFile);
                 String fileName = System.currentTimeMillis() + "_" + avatarFile.getOriginalFilename();
                 Path path = Paths.get("src/main/webapp/uploads/" + fileName);
