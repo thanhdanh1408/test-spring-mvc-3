@@ -30,12 +30,12 @@ public class PostController {
         }
 
         try {
-            Post post = new Post(title, body, user.getId(), "public");
             if (title.trim().isEmpty() || body.trim().isEmpty()) {
                 model.addAttribute("error", "Không được để trống tiêu đề hoặc nội dung");
                 return "redirect:/";
             }
 
+            Post post = new Post(title, body, user.getId(), "public");
             if (postService.createdPost(post)) {
                 return "redirect:/";
             } else {

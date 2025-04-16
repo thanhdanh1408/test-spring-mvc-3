@@ -16,7 +16,7 @@ public class Post {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(nullable = false)
     private String title;
@@ -24,7 +24,7 @@ public class Post {
     private String body;
 
     @Column(name = "user_id")
-    private int userId;
+    private Long userId;
 
     @ManyToOne
     @JoinColumn(name = "user_id", insertable = false, updatable = false)
@@ -39,8 +39,16 @@ public class Post {
     public Post() {
     }
 
+    // Constructor không có ID
+    public Post(String title, String body, Long userId, String status) {
+        this.title = title;
+        this.body = body;
+        this.userId = userId;
+        this.status = status;
+    }
+
     // Constructor đầy đủ
-    public Post(int id, String title, String body, int userId, String status, LocalDateTime createdAt) {
+    public Post(Long id, String title, String body, Long userId, String status, LocalDateTime createdAt) {
         this.id = id;
         this.title = title;
         this.body = body;
@@ -49,20 +57,12 @@ public class Post {
         this.createdAt = createdAt;
     }
 
-    // Constructor không có ID
-    public Post(String title, String body, int userId, String status) {
-        this.title = title;
-        this.body = body;
-        this.userId = userId;
-        this.status = status;
-    }
-
     // Getter và Setter
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -82,11 +82,11 @@ public class Post {
         this.body = body;
     }
 
-    public int getUserId() {
+    public Long getUserId() {
         return userId;
     }
 
-    public void setUserId(int userId) {
+    public void setUserId(Long userId) {
         this.userId = userId;
     }
 

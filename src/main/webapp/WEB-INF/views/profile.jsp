@@ -1,8 +1,8 @@
-<%@page import="java.util.List"%>
-<%@ page import="com.abc.entities.*" %>
 <%@ page contentType="text/html; charset=UTF-8" pageEncoding="UTF-8" %>
+<%@ page import="com.abc.entities.*" %>
+<%@ page import="java.util.List" %>
 <!DOCTYPE html>
-<html lang="en">
+<html lang="vi">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -12,9 +12,9 @@
 <body>
     <nav class="navbar navbar-expand-lg navbar-dark bg-primary">
         <div class="container-fluid">
-            <a class="navbar-brand" href="#">🏠 Trang chủ</a>
+            <a class="navbar-brand" href="<%= request.getContextPath() %>/">🏠 Trang chủ</a>
             <div class="ms-auto">
-                <button class="btn btn-outline-light">Đăng xuất</button>
+                <a href="<%= request.getContextPath() %>/logout" class="btn btn-outline-light">Đăng xuất</a>
             </div>
         </div>
     </nav>
@@ -25,42 +25,63 @@
                 <div class="card p-3 mb-3">
                     <p class="fw-bold">Danh sách người theo dõi</p>
                     <ul class="list-unstyled">
-                        <li><img src="Image/7cdb3e40d6dedfc8dcde7c2ddf0abcf6.jpg" alt="Avatar" class="rounded-circle me-2" width="30"> @username1</li>
-                        <li><img src="Image/7cdb3e40d6dedfc8dcde7c2ddf0abcf6.jpg" alt="Avatar" class="rounded-circle me-2" width="30"> @username2</li>
-                        <li><img src="Image/7cdb3e40d6dedfc8dcde7c2ddf0abcf6.jpg" alt="Avatar" class="rounded-circle me-2" width="30"> @username3</li>
+                        <%
+                        List<User> followers = (List<User>) request.getAttribute("followers");
+                        if (followers != null && !followers.isEmpty()) {
+                            for (User follower : followers) {
+                        %>
+                        <li class="mb-2">
+                            <img src="<%= follower.getAvatar() != null ? request.getContextPath() + follower.getAvatar() : request.getContextPath() + "/resources/images/avt1.jpg" %>"
+                                 alt="Avatar" class="rounded-circle me-2" width="30">
+                            <%= follower.getUsername() %>
+                        </li>
+                        <%
+                            }
+                        } else {
+                        %>
+                        <p class="text-muted">Chưa có người theo dõi.</p>
+                        <%
+                        }
+                        %>
                     </ul>
                 </div>
             </div>
             <div class="col-md-6 mt-0">
                 <div class="card mb-3 text-center">
-                <% User user = (User) request.getAttribute("user"); %>
+                    <% User user = (User) request.getAttribute("user"); %>
                     <div class="card-body">
-                        <img src="${pageContext.request.contextPath}/resources/images/avt.jpg" alt="Avatar" class="rounded-circle mb-3" width="150" height="150">
+                        <img src="<%= user.getAvatar() != null ? request.getContextPath() + user.getAvatar() : request.getContextPath() + "/resources/images/avt.jpg" %>"
+                             alt="Avatar" class="rounded-circle mb-3" width="150" height="150">
                         <h4 class="card-title"><%= user.getUsername() %></h4>
-                        <p><strong>Đang theo dõi:</strong> | <strong>Người theo dõi:</strong></p>
-                        <button class="btn btn-primary mb-3">Chỉnh sửa hồ sơ</button>
-                        <form class="d-flex gap-2 align-items-center">
-                            <select class="form-select w-25">
-                                <option selected>Trạng thái</option>
-                                <option value="1">Công khai</option>
-                                <option value="2">Người theo dõi</option>
-                                <option value="3">Chỉ mình tôi</option>
+                        <p><strong>Email:</strong> <%= user.getEmail() != null ? user.getEmail() : "Chưa cập nhật" %></p>
+                        <p><strong>Ngày sinh:</strong> <%= user.getDateOfBirth() != null ? user.getDateOfBirth() : "Chưa cập nhật" %></p>
+                        <p><strong>Nơi ở:</strong> <%= user.getPlace() != null ? user.getPlace().getName() : "Chưa cập nhật" %></p>
+                        <p><strong>Đang theo dõi:</strong> <%= request.getAttribute("followedCount") != null ? request.getAttribute("followedCount") : 0 %> | 
+                           <strong>Người theo dõi:</strong> <%= request.getAttribute("followerCount") != null ? request.getAttribute("followerCount") : 0 %></p>
+                        <a href="<%= request.getContextPath() %>/users/edit/<%= user.getId() %>" class="btn btn-primary mb-3">Chỉnh sửa hồ sơ</a>
+                        <form class="d-flex gap-2 align-items-center" action="/post" method="post">
+                            <select class="form-select w-25" name="status">
+                                <option value="public" selected>Công khai</option>
+                                <option value="followers">Người theo dõi</option>
+                                <option value="private">Chỉ mình tôi</option>
                             </select>
-                            <input type="text" class="form-control" placeholder="Bạn đang nghĩ gì?">
-                            <button class="btn btn-danger">Đăng</button>
+                            <input type="text" class="form-control" name="title" placeholder="Tiêu đề">
+                            <textarea class="form-control mt-2" name="body" placeholder="Bạn đang nghĩ gì?" rows="3"></textarea>
+                            <button class="btn btn-danger mt-2">Đăng</button>
                         </form>
                     </div>
                 </div>
-                
-                <% 
-	                List<Post> posts = (List<Post>) request.getAttribute("posts");
 
-                	for(Post post : posts) {
+                <% 
+                List<Post> posts = (List<Post>) request.getAttribute("posts");
+                if (posts != null) {
+                    for (Post post : posts) {
                 %>
                 <div class="card p-3 mb-3">
                     <div class="d-flex align-items-center justify-content-between mb-2">
                         <div class="d-flex align-items-center">
-                            <img src="${pageContext.request.contextPath}/resources/images/avt.jpg" alt="Avatar" class="rounded-circle me-2" width="30">
+                            <img src="<%= user.getAvatar() != null ? request.getContextPath() + user.getAvatar() : request.getContextPath() + "/resources/images/avt.jpg" %>"
+                                 alt="Avatar" class="rounded-circle me-2" width="30">
                             <b><%= user.getUsername() %></b>
                             <span class="text-muted ms-3"><%= post.getCreatedAt() %></span>
                         </div>
@@ -73,19 +94,34 @@
                         </div>
                     </div>
                     <p><strong>Trạng thái:</strong> <%= post.getStatus() %></p>
-                    <p><%= post.getTitle() %></p>
+                    <p><strong>Tiêu đề:</strong> <%= post.getTitle() %></p>
                     <p><%= post.getBody() %></p>
                 </div>
-                <% } %>
-                
-                
-                
-                
+                <% 
+                    }
+                }
+                %>
             </div>
             <div class="col-md-3">
                 <div class="card p-3 mb-3">
                     <p class="fw-bold">Gợi ý theo dõi</p>
-                    <p><img src="Image/7cdb3e40d6dedfc8dcde7c2ddf0abcf6.jpg" alt="Avatar" class="rounded-circle me-2" width="30"> @username <button class="btn btn-sm btn-primary">Theo dõi</button></p>
+                    <%
+                    List<User> suggestFollow = (List<User>) request.getAttribute("suggestFollow");
+                    if (suggestFollow != null) {
+                        for (User u : suggestFollow) {
+                    %>
+                    <p>
+                        <img src="<%= u.getAvatar() != null ? request.getContextPath() + u.getAvatar() : request.getContextPath() + "/resources/images/avt.jpg" %>"
+                             alt="Avatar" class="rounded-circle me-2" width="30">
+                        <%= u.getUsername() %>
+                        <button class="btn btn-sm btn-primary follow-btn"
+                                data-following="<%= user.getId()%>"
+                                data-followed="<%= u.getId()%>">Theo dõi</button>
+                    </p>
+                    <%
+                        }
+                    }
+                    %>
                 </div>
             </div>
         </div>
@@ -100,5 +136,22 @@
     </footer>
 
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        document.querySelectorAll('.follow-btn').forEach(button => {
+            button.addEventListener('click', function() {
+                const followingUserId = this.getAttribute('data-following');
+                const followedUserId = this.getAttribute('data-followed');
+
+                fetch('/follow/add', {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/x-www-form-urlencoded' },
+                    body: new URLSearchParams({ followingUserId, followedUserId })
+                }).then(response => response.text())
+                  .then(data => {
+                      location.reload();
+                  });
+            });
+        });
+    </script>
 </body>
 </html>

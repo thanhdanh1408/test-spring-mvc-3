@@ -22,7 +22,7 @@ public class FollowController {
 
     @PostMapping("/add")
     @ResponseBody
-    public String followUser(@RequestParam("followingUserId") int followingUserId, @RequestParam("followedUserId") int followedUserId) {
+    public String followUser(@RequestParam("followingUserId") Long followingUserId, @RequestParam("followedUserId") Long followedUserId) {
         try {
             followService.followUser(followingUserId, followedUserId);
             return "Followed successfully!";
@@ -35,7 +35,7 @@ public class FollowController {
 
     @PostMapping("/remove")
     @ResponseBody
-    public String unfollowUser(@RequestParam("followingUserId") int followingUserId, @RequestParam("followedUserId") int followedUserId) {
+    public String unfollowUser(@RequestParam("followingUserId") Long followingUserId, @RequestParam("followedUserId") Long followedUserId) {
         try {
             followService.unfollowUser(followingUserId, followedUserId);
             return "Unfollowed successfully!";

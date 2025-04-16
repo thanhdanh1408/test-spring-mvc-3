@@ -17,11 +17,13 @@ public class UserServiceImpl implements UserService {
     @Autowired
     private UserDAO userDAO;
 
+    @Autowired
+    private FollowService followService;
+
     private static final Pattern EMAIL_PATTERN = Pattern.compile(
             "^[A-Za-z0-9+_.-]+@[A-Za-z0-9.-]+$"
-        );
+    );
 
-    
     @Override
     public User getUserByUserName(String userName) {
         if (userName == null || userName.trim().isEmpty()) {
@@ -35,41 +37,41 @@ public class UserServiceImpl implements UserService {
         if (user == null || user.getUsername() == null || user.getUsername().trim().isEmpty()) {
             throw new IllegalArgumentException("Tên người dùng không được rỗng");
         }
-        if (user.getPassWord() == null || user.getPassWord().trim().isEmpty()) {
+        if (user.getPassword() == null || user.getPassword().trim().isEmpty()) {
             throw new IllegalArgumentException("Mật khẩu không được rỗng");
         }
         return userDAO.registerUser(user);
     }
-    
+
+    @Override
     public boolean isEmailValid(String email) {
         if (email == null || !EMAIL_PATTERN.matcher(email).matches()) {
             return false;
         }
         return userDAO.getUserByEmail(email) == null;
     }
-    
+
+    @Override
     public boolean isAgeValid(LocalDate dateOfBirth) {
+        if (dateOfBirth == null) {
+            return false;
+        }
         return Period.between(dateOfBirth, LocalDate.now()).getYears() >= 15;
-    }
-    
-    public void saveUser(User user) {
-        userDAO.saveUser(user);
-    }
-
-    public void updateUser(User user) {
-        userDAO.updateUser(user);
-    }
-
-    public User getUserById(Long id) {
-        return userDAO.getUserById(id);
     }
 
     @Override
-    public List<User> findUsersByFollowCriteria(int minFollowing, int minFollower) {
-        if (minFollowing < 0 || minFollower < 0) {
-            throw new IllegalArgumentException("Số lượng người theo dõi hoặc đang theo dõi không được âm");
-        }
-        return userDAO.findUsersByFollowCriteria(minFollowing, minFollower);
+    public void saveUser(User user) {
+        userDAO.save(user);
+    }
+
+    @Override
+    public void updateUser(User user) {
+        userDAO.update(user);
+    }
+
+    @Override
+    public User getUserById(Long id) {
+        return userDAO.getUserById(id);
     }
 
     @Override
@@ -78,5 +80,22 @@ public class UserServiceImpl implements UserService {
             throw new IllegalArgumentException("Từ khóa tìm kiếm không được rỗng");
         }
         return userDAO.searchUsersByUsername(keyword);
+    }
+
+    @Override
+    public List<User> findAll() {
+        return userDAO.findAll();
+    }
+
+    @Override
+    public Long getUserFollowersCount(Long userId) {
+        List<User> followers = followService.getUserFollower(userId);
+        return (long) followers.size();
+    }
+
+    @Override
+    public Long getUserFollowedCount(Long userId) {
+        List<User> followed = followService.getUserFollowed(userId);
+        return (long) followed.size();
     }
 }

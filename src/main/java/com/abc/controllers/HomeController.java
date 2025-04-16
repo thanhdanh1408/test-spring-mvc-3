@@ -34,10 +34,11 @@ public class HomeController {
         }
 
         try {
-            List<User> suggestFollow = followService.getSuggestFollow(user.getId());
-            List<User> usersf = followService.getUserFollower(user.getId());
-            List<User> userfed = followService.getUserFollowed(user.getId());
-            List<Post> posts = postService.getAllPost(user.getId());
+            Long userId = user.getId();
+            List<User> suggestFollow = followService.getSuggestFollow(userId);
+            List<User> usersf = followService.getUserFollower(userId);
+            List<User> userfed = followService.getUserFollowed(userId);
+            List<Post> posts = postService.getAllPost(userId);
 
             model.addAttribute("suggestfollow", suggestFollow);
             model.addAttribute("usersf", usersf);

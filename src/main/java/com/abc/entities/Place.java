@@ -3,7 +3,7 @@ package com.abc.entities;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "places")
+@Table(name = "place")
 public class Place {
 
     @Id
@@ -12,6 +12,16 @@ public class Place {
 
     @Column(nullable = false)
     private String name;
+
+    // Constructor mặc định
+    public Place() {
+    }
+
+    // Constructor đầy đủ
+    public Place(Long id, String name) {
+        this.id = id;
+        this.name = name;
+    }
 
     // Getters and Setters
     public Long getId() {

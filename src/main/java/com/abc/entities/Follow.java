@@ -1,13 +1,6 @@
 package com.abc.entities;
 
-import jakarta.persistence.Entity;
-import jakarta.persistence.Id;
-import jakarta.persistence.Table;
-import jakarta.persistence.GeneratedValue;
-import jakarta.persistence.GenerationType;
-import jakarta.persistence.ManyToOne;
-import jakarta.persistence.JoinColumn;
-import jakarta.persistence.Column;
+import jakarta.persistence.*;
 import java.time.LocalDateTime;
 
 @Entity
@@ -15,18 +8,16 @@ import java.time.LocalDateTime;
 public class Follow {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id; // Thêm khóa chính
-
     @Column(name = "following_user_id")
-    private int followingUserId;
+    private Long followingUserId;
+
+    @Id
+    @Column(name = "followed_user_id")
+    private Long followedUserId;
 
     @ManyToOne
     @JoinColumn(name = "following_user_id", insertable = false, updatable = false)
     private User followingUser;
-
-    @Column(name = "followed_user_id")
-    private int followedUserId;
 
     @ManyToOne
     @JoinColumn(name = "followed_user_id", insertable = false, updatable = false)
@@ -40,26 +31,18 @@ public class Follow {
     }
 
     // Constructor đầy đủ
-    public Follow(int followingUserId, int followedUserId, LocalDateTime createdAt) {
+    public Follow(Long followingUserId, Long followedUserId, LocalDateTime createdAt) {
         this.followingUserId = followingUserId;
         this.followedUserId = followedUserId;
         this.createdAt = createdAt;
     }
 
     // Getter và Setter
-    public int getId() {
-        return id;
-    }
-
-    public void setId(int id) {
-        this.id = id;
-    }
-
-    public int getFollowingUserId() {
+    public Long getFollowingUserId() {
         return followingUserId;
     }
 
-    public void setFollowingUserId(int followingUserId) {
+    public void setFollowingUserId(Long followingUserId) {
         this.followingUserId = followingUserId;
     }
 
@@ -71,11 +54,11 @@ public class Follow {
         this.followingUser = followingUser;
     }
 
-    public int getFollowedUserId() {
+    public Long getFollowedUserId() {
         return followedUserId;
     }
 
-    public void setFollowedUserId(int followedUserId) {
+    public void setFollowedUserId(Long followedUserId) {
         this.followedUserId = followedUserId;
     }
 

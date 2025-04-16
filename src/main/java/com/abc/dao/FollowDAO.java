@@ -17,7 +17,7 @@ public class FollowDAO {
     @Autowired
     private SessionFactory sessionFactory;
 
-    public List<User> getFollowerUser(int id) {
+    public List<User> getFollowerUser(Long id) {
         try (Session session = sessionFactory.openSession()) {
             String hql = "SELECT u FROM User u " +
                         "JOIN Follow f ON u.id = f.followingUserId " +
@@ -28,7 +28,7 @@ public class FollowDAO {
         }
     }
 
-    public List<User> getFollowedUsers(int id) {
+    public List<User> getFollowedUsers(Long id) {
         try (Session session = sessionFactory.openSession()) {
             String hql = "SELECT u FROM User u " +
                         "JOIN Follow f ON u.id = f.followedUserId " +
@@ -39,7 +39,7 @@ public class FollowDAO {
         }
     }
 
-    public void followUser(int followingUserId, int followedUserId) {
+    public void followUser(Long followingUserId, Long followedUserId) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Follow follow = new Follow(followingUserId, followedUserId, LocalDateTime.now());
@@ -50,7 +50,7 @@ public class FollowDAO {
         }
     }
 
-    public void unfollowUser(int followingUserId, int followedUserId) {
+    public void unfollowUser(Long followingUserId, Long followedUserId) {
         try (Session session = sessionFactory.openSession()) {
             session.beginTransaction();
             Query query = session.createQuery("DELETE FROM Follow WHERE followingUserId = :followingUserId AND followedUserId = :followedUserId");
@@ -63,7 +63,7 @@ public class FollowDAO {
         }
     }
 
-    public List<User> getSuggestedFollows(int userId) {
+    public List<User> getSuggestedFollows(Long userId) {
         try (Session session = sessionFactory.openSession()) {
             String hql = "SELECT u FROM User u " +
                         "LEFT JOIN Follow f ON u.id = f.followedUserId AND f.followingUserId = :userId " +

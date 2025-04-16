@@ -18,54 +18,57 @@ public class User {
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
-    private int id;
+    private Long id;
 
     @Column(unique = true, nullable = false)
     private String username;
 
     @Column(name = "password", nullable = false)
-    private String passWord;
+    private String password;
 
     @Column(name = "email", unique = true)
     private String email;
-    
+
     @Column(name = "date_of_birth")
     private LocalDate dateOfBirth;
-    
+
     @Column(name = "created_at")
     private LocalDateTime createdAt;
-    
-    @ManyToOne
-    @JoinColumn(name = "place_of_residence")
-    private Place placeOfResidence;
 
-    @Column(name = "avatar_path")
-    private String avatarPath;
-    
+    @ManyToOne
+    @JoinColumn(name = "place_id")
+    private Place place;
+
+    @Column(name = "avatar")
+    private String avatar;
+
     // Constructor mặc định (yêu cầu bởi Hibernate)
     public User() {
     }
 
-    // Constructor đầy đủ
-    public User(int id, String username, String passWord, LocalDateTime createdAt) {
-        this.id = id;
+    // Constructor không có ID (dùng khi tạo mới)
+    public User(String username, String password) {
         this.username = username;
-        this.passWord = passWord;
-        this.createdAt = createdAt;
+        this.password = password;
     }
 
-    // Constructor không có ID (dùng khi tạo mới)
-    public User(String username, String passWord) {
+    // Constructor đầy đủ
+    public User(String username, String password, String email, LocalDate dateOfBirth, LocalDateTime createdAt, Place place, String avatar) {
         this.username = username;
-        this.passWord = passWord;
+        this.password = password;
+        this.email = email;
+        this.dateOfBirth = dateOfBirth;
+        this.createdAt = createdAt;
+        this.place = place;
+        this.avatar = avatar;
     }
 
     // Getter và Setter
-    public int getId() {
+    public Long getId() {
         return id;
     }
 
-    public void setId(int id) {
+    public void setId(Long id) {
         this.id = id;
     }
 
@@ -77,22 +80,14 @@ public class User {
         this.username = username;
     }
 
-    public String getPassWord() {
-        return passWord;
+    public String getPassword() {
+        return password;
     }
 
-    public void setPassWord(String passWord) {
-        this.passWord = passWord;
+    public void setPassword(String password) {
+        this.password = password;
     }
 
-    public LocalDateTime getCreatedAt() {
-        return createdAt;
-    }
-
-    public void setCreatedAt(LocalDateTime createdAt) {
-        this.createdAt = createdAt;
-    }
-    
     public String getEmail() {
         return email;
     }
@@ -109,19 +104,27 @@ public class User {
         this.dateOfBirth = dateOfBirth;
     }
 
-    public Place getPlaceOfResidence() {
-        return placeOfResidence;
+    public LocalDateTime getCreatedAt() {
+        return createdAt;
     }
 
-    public void setPlaceOfResidence(Place placeOfResidence) {
-        this.placeOfResidence = placeOfResidence;
+    public void setCreatedAt(LocalDateTime createdAt) {
+        this.createdAt = createdAt;
     }
 
-    public String getAvatarPath() {
-        return avatarPath;
+    public Place getPlace() {
+        return place;
     }
 
-    public void setAvatarPath(String avatarPath) {
-        this.avatarPath = avatarPath;
+    public void setPlace(Place place) {
+        this.place = place;
+    }
+
+    public String getAvatar() {
+        return avatar;
+    }
+
+    public void setAvatar(String avatar) {
+        this.avatar = avatar;
     }
 }

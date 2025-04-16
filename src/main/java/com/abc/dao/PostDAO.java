@@ -16,7 +16,7 @@ public class PostDAO {
     @Autowired
     private SessionFactory sessionFactory;
 
-    public List<Post> getALLPost(int id) {
+    public List<Post> getALLPost(Long id) {
         try (Session session = sessionFactory.openSession()) {
             String hql = "SELECT DISTINCT p FROM Post p " +
                         "JOIN p.user u " +
@@ -29,7 +29,7 @@ public class PostDAO {
         }
     }
 
-    public List<Post> getPostById(int id) {
+    public List<Post> getPostById(Long id) {
         try (Session session = sessionFactory.openSession()) {
             Query<Post> query = session.createQuery("FROM Post WHERE userId = :id ORDER BY createdAt DESC", Post.class);
             query.setParameter("id", id);
